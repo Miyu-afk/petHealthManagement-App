@@ -1,5 +1,5 @@
 import SmileIcon from "./SmileIcon";
-import SmileIconOn from "./SmileIcoOn";
+import SmileIconOn from "./SmileIconOn";
 import FrownIcon from "./FrownIcon";
 import FrownIconOn from "./FrownIconOn";
 import HealthGraph from "./HealthGraph";
@@ -20,8 +20,8 @@ interface Pet {
   mood: boolean | null;
   poop: boolean | null;
   meal: boolean | null;
-  vitality: number;
-  record: string;
+  vitality: number | null;
+  record: string | null;
   owner_id: number;
   pet_id: number;
 }
@@ -31,6 +31,7 @@ interface PetHealthBodyProps {
   addHealth: (data: Partial<Pet>) => void;
   petsData: Pet[] | null;
   onChildSelectedPet: (pet: Pet) => void;
+  onChildAddPet: (newPetData: Partial<Pet>) => void;
 }
 
 const PetHealthBody = ({
@@ -38,6 +39,7 @@ const PetHealthBody = ({
   addHealth,
   petsData,
   onChildSelectedPet,
+  onChildAddPet,
 }: PetHealthBodyProps) => {
   if (!petsData) {
     return (
@@ -62,11 +64,17 @@ const PetHealthBody = ({
   };
 
   const sortedPets = petsData.sort((a, b) => {
-    return new Date(a.record).getTime() - new Date(b.record).getTime();
+    const dateA = a.record ? new Date(a.record).getTime() : 0;
+    const dateB = b.record ? new Date(b.record).getTime() : 0;
+    return dateA - dateB;
   });
-  const dates = sortedPets.map((item) => item.record);
+  const dates = sortedPets
+    .map((item) => item.record)
+    .filter((record): record is string => record !== null);
   const catNameData = sortedPets.map((item) => item.name);
-  const vitalityData = sortedPets.map((item) => item.vitality);
+  const vitalityData = sortedPets
+    .map((item) => item.vitality)
+    .filter((v): v is number => v !== null);
 
   const healthObj = [
     {
@@ -182,7 +190,11 @@ const PetHealthBody = ({
     <>
       {Object.values(petsData).flat().length > 1 ? (
         <div className="flex justify-center mt-18 text-2xl">
-          <SelectPet petsData={petsData} onPetSelect={handlePetSelected} />
+          <SelectPet
+            petsData={petsData}
+            onPetSelect={handlePetSelected}
+            addPet={onChildAddPet}
+          />
         </div>
       ) : null}
       <div className="flex justify-center mt-5 text-l">

@@ -9,12 +9,9 @@ import {
   Title,
   Tooltip,
   Legend,
-  Ticks,
-  elements,
+  ChartEvent,
 } from "chart.js";
-import { getDate } from "date-fns";
 import { ActiveElement } from "chart.js/dist/plugins/plugin.tooltip";
-import { ChartEvent } from "chart.js/dist/core/core.plugins";
 
 ChartJS.register(
   CategoryScale,
@@ -32,9 +29,10 @@ interface Pet {
   mood: boolean | null;
   poop: boolean | null;
   meal: boolean | null;
-  vitality: number;
-  record: string;
+  vitality: number | null;
+  record: string | null;
   owner_id: number;
+  pet_id: number;
 }
 
 interface HealthGraphProps {
@@ -48,7 +46,6 @@ interface HealthGraphProps {
 }
 
 function HealthGraph({
-  petsData,
   dates,
   healthValueData,
   catNameData,
@@ -56,9 +53,6 @@ function HealthGraph({
   currentWeek,
   targetPets,
 }: HealthGraphProps) {
-  const [week, setWeek] = useState(new Date());
-  let weeks = 1;
-  const newDate = new Date(currentWeek);
   const allDate = dates.map((date, i) => ({
     date,
     health: healthValueData[i],
