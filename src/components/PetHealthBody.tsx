@@ -7,7 +7,7 @@ import GoodButton from "./GoodButton";
 import GoodButtonOn from "./GoodButtonOn";
 import BadButton from "./BadButton";
 import BadButtonOn from "./BadButtonOn";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ToggleButton from "./ToggleButton";
 import CheckButton from "./CheckButton";
 import NoCheckButton from "./NoCheckButton";
@@ -32,6 +32,7 @@ interface PetHealthBodyProps {
   petsData: Pet[] | null;
   onChildSelectedPet: (pet: Pet) => void;
   onChildAddPet: (newPetData: Partial<Pet>) => void;
+  newPet: Pet | null;
 }
 
 const PetHealthBody = ({
@@ -40,12 +41,20 @@ const PetHealthBody = ({
   petsData,
   onChildSelectedPet,
   onChildAddPet,
+  newPet
 }: PetHealthBodyProps) => {
   if (!petsData) {
     return (
       <div className="flex justify-center mt-20">...データ読み込み中...</div>
     );
   }
+
+  useEffect(() => {
+    if(newPet){
+      setTargetPets(newPet);
+      onChildSelectedPet(newPet);
+    }
+  }, [newPet]);
 
   const [smileOn, setSmileOn] = useState(false);
   const [frownOn, setFrownOn] = useState(false);
@@ -188,7 +197,6 @@ const PetHealthBody = ({
 
   return (
     <>
-      {Object.values(petsData).flat().length > 1 ? (
         <div className="flex justify-center mt-18 text-2xl">
           <SelectPet
             petsData={petsData}
@@ -196,7 +204,7 @@ const PetHealthBody = ({
             addPet={onChildAddPet}
           />
         </div>
-      ) : null}
+      
       <div className="flex justify-center mt-5 text-l">
         <p>おなまえ：{targetPets ? targetPets.name : "???"}ちゃん</p>
       </div>

@@ -1,14 +1,16 @@
 {
-  "name": "CatManagement-App-typescript",
+  "name": "PetHealthManagement-App-typescript",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port 8080",
-    "preview": "vite preview --port 8000"
+    "build": "vite build",
+    "preview": "vite preview --port 8080"
   },
   "proxy": "http://localhost:3000",
   "dependencies": {
+    "@supabase/supabase-js": "^2.75.0",
     "@tailwindcss/vite": "^4.1.14",
     "@types/css-modules": "^1.0.5",
     "axios": "^1.12.2",

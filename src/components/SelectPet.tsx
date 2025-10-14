@@ -107,6 +107,7 @@ const SelectPet = ({ petsData, onPetSelect, addPet }: SelectPetsProps) => {
                   owner_id: 1,
                   pet_id: ownersMaxPetId + 1,
                 };
+                
                 addPet(newPet);
                 setShowNameInput(false);
                 setNewPetName("");

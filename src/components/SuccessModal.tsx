@@ -6,9 +6,10 @@ interface Pet {
   mood: boolean | null;
   poop: boolean | null;
   meal: boolean | null;
-  vitality: number;
-  record: string;
+  vitality: number | null;
+  record: string | null;
   owner_id: number;
+  pet_id: number;
 }
 
 interface SuccessModalProps {
