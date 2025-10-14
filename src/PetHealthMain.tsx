@@ -4,7 +4,7 @@ import PetHealthHeader from "./components/PetHealthHeader";
 import SuccessModal from "./components/SuccessModal";
 import { useState, useEffect } from "react";
 import React from "react";
-
+import { supabase } from "./lib/supabaseClient";
 
 // const API_URL = "http://localhost:3000/pets";
 
