@@ -41,7 +41,7 @@ const PetHealthBody = ({
   petsData,
   onChildSelectedPet,
   onChildAddPet,
-  newPet
+  newPet,
 }: PetHealthBodyProps) => {
   if (!petsData) {
     return (
@@ -50,7 +50,7 @@ const PetHealthBody = ({
   }
 
   useEffect(() => {
-    if(newPet){
+    if (newPet) {
       setTargetPets(newPet);
       onChildSelectedPet(newPet);
     }
@@ -197,14 +197,15 @@ const PetHealthBody = ({
 
   return (
     <>
-        <div className="flex justify-center mt-18 text-2xl">
-          <SelectPet
-            petsData={petsData}
-            onPetSelect={handlePetSelected}
-            addPet={onChildAddPet}
-          />
-        </div>
-      
+      <div className="flex justify-center mt-18 text-2xl">
+        <SelectPet
+          key={petsData?.length}
+          petsData={petsData}
+          onPetSelect={handlePetSelected}
+          addPet={onChildAddPet}
+        />
+      </div>
+
       <div className="flex justify-center mt-5 text-l">
         <p>おなまえ：{targetPets ? targetPets.name : "???"}ちゃん</p>
       </div>

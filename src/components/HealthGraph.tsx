@@ -58,11 +58,11 @@ function HealthGraph({
     health: healthValueData[i],
     name: catNameData[i],
   }));
-  const catData = allDate.filter((item) => {
+  const petData = allDate.filter((item) => {
     return item.name.includes(`${name}`);
   });
   const graphData = {
-    labels: catData
+    labels: petData
       .filter((item) => {
         const recordDate = new Date(item.date.split(" ")[0]);
         const weekStart = new Date(currentWeek);
@@ -78,7 +78,7 @@ function HealthGraph({
     datasets: [
       {
         label: "けんこう度",
-        data: catData.map((item) => item.health),
+        data: petData.map((item) => item.health),
         borderColor: "rgb(75, 192, 192)",
       },
     ],

@@ -41,7 +41,8 @@ const SelectPet = ({ petsData, onPetSelect, addPet }: SelectPetsProps) => {
   );
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedPet(e.target.value);
+    const value = e.target.value;
+    setSelectedPet(value === "new" ? "new" : Number(value))
   };
 
   const handleClickSelect = () => {
