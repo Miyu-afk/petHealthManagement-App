@@ -72,18 +72,28 @@ const PetHealthBody = ({
     onChildSelectedPet(SelectedPet);
   };
 
-  const sortedPets = petsData.sort((a, b) => {
+  const sortedPets = [...petsData].sort((a, b) => {
     const dateA = a.record ? new Date(a.record).getTime() : 0;
     const dateB = b.record ? new Date(b.record).getTime() : 0;
     return dateA - dateB;
   });
-  const dates = sortedPets
-    .map((item) => item.record)
-    .filter((record): record is string => record !== null);
-  const petIdData = sortedPets.map((item) => item.id);
-  const vitalityData = sortedPets
-    .map((item) => item.vitality)
-    .filter((v): v is number => v !== null);
+
+  const validPets = sortedPets.filter(
+    (item) => item.record !== null && item.vitality !== null
+  );
+
+  const uniqueByData = validPets.reduce((acc, per) => {
+    const key = `${pet.pet_id}-${pet.record}`;
+    acc.set(key, pet);
+    return acc;
+  }, new Map<string, Pet>())
+
+  const finalPets = Array.from(uniqueByData.values());
+
+
+  const dates = finalPets.map((item) => item.record as string);
+  const petIdData = finalPets.map((item) => item.pet_id);
+  const vitalityData = finalPets.map((item) => item.vitality as number);
 
   const healthObj = [
     {

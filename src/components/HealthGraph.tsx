@@ -64,12 +64,26 @@ function HealthGraph({
       ? allData.filter((item) => item.id === targetPets.pet_id)
       : [];
 
+  console.log({
+    allData,
+    targetPets,
+    petIdData,
+    filteredDataBefore: allData.map((a) => a.id),
+    filterCondition: targetPets ? targetPets.pet_id : null,
+  });
+
   const weekStart = new Date(currentWeek);
   weekStart.setDate(currentWeek.getDate() - 7);
 
   const weekData = filteredData.filter((item) => {
-    const recordDate = new Date(item.date.split(" ")[0]);
+    const recordDate = new Date(item.date.replace(" ", "T"));
     return recordDate >= weekStart && recordDate <= currentWeek;
+  });
+
+  const labels = weekData.map((item) => {
+    const date = new Date(item.date.replace(" ", "T"));
+    date.setHours(date.getHours() + 9);
+    return `${date.getMonth() + 1}月${date.getDate()}日`;
   });
 
   const petData = targetPets
