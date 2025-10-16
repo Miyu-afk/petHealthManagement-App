@@ -39,7 +39,7 @@ interface HealthGraphProps {
   petsData: Pet[] | null;
   dates: string[];
   healthValueData: number[];
-  catNameData: string[];
+  petIdData: number[];
   setCurrentWeek: Dispatch<SetStateAction<Date>>;
   currentWeek: Date;
   targetPets: Pet | null;
@@ -48,19 +48,34 @@ interface HealthGraphProps {
 function HealthGraph({
   dates,
   healthValueData,
-  catNameData,
+  petIdData,
   setCurrentWeek,
   currentWeek,
   targetPets,
 }: HealthGraphProps) {
-  const allDate = dates.map((date, i) => ({
+  const allData = dates.map((date, i) => ({
     date,
     health: healthValueData[i],
-    name: catNameData[i],
+    id: petIdData[i],
   }));
-  const petData = allDate.filter((item) => {
-    return item.name.includes(`${name}`);
+
+  const filteredData =
+    targetPets != null
+      ? allData.filter((item) => item.id === targetPets.pet_id)
+      : [];
+
+  const weekStart = new Date(currentWeek);
+  weekStart.setDate(currentWeek.getDate() - 7);
+
+  const weekData = filteredData.filter((item) => {
+    const recordDate = new Date(item.date.split(" ")[0]);
+    return recordDate >= weekStart && recordDate <= currentWeek;
   });
+
+  const petData = targetPets
+    ? allData.filter((item) => item.id === targetPets.pet_id)
+    : [];
+
   const graphData = {
     labels: petData
       .filter((item) => {
@@ -71,6 +86,7 @@ function HealthGraph({
       })
       .map((item) => {
         const date = new Date(item.date);
+        date.setHours(date.getHours() + 9);
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const day = String(date.getDate()).padStart(2, "0");
         return `${month}月${day}日`;
@@ -78,7 +94,7 @@ function HealthGraph({
     datasets: [
       {
         label: "けんこう度",
-        data: petData.map((item) => item.health),
+        data: weekData.map((item) => item.health),
         borderColor: "rgb(75, 192, 192)",
       },
     ],
@@ -86,13 +102,13 @@ function HealthGraph({
 
   const options = {
     onClick: (event: ChartEvent, elements: ActiveElement[]) => {
-      if (elements.length > 0) {
+      if (elements.length > 0 && targetPets) {
         const index = elements[0].index;
-        const LabelDate = graphData.labels[index];
-        const LabelCatData = graphData.datasets[0].data[index];
+        const labelDate = graphData.labels[index];
+        const labelPetData = graphData.datasets[0].data[index];
         if (targetPets) {
           alert(
-            `${targetPets.name}ちゃん、${LabelDate} けんこう度=${LabelCatData}`
+            `${targetPets.name}ちゃん、${labelDate} けんこう度=${labelPetData}`
           );
         }
       }
@@ -119,7 +135,24 @@ function HealthGraph({
   return (
     <>
       <div className="App" style={divStyle}>
-        <Line data={graphData} options={options} id="chart-key" />
+        <Line
+          data={
+            targetPets
+              ? graphData
+              : {
+                  labels: [],
+                  datasets: [
+                    {
+                      label: "けんこう度",
+                      data: [],
+                      borderColor: "rgb(75, 192, 192",
+                    },
+                  ],
+                }
+          }
+          options={options}
+          id="chart-key"
+        />
       </div>
       <div className="flex justify-between ml-10 mr-10">
         <button

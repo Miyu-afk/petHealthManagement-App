@@ -80,7 +80,7 @@ const PetHealthBody = ({
   const dates = sortedPets
     .map((item) => item.record)
     .filter((record): record is string => record !== null);
-  const catNameData = sortedPets.map((item) => item.name);
+  const petIdData = sortedPets.map((item) => item.id);
   const vitalityData = sortedPets
     .map((item) => item.vitality)
     .filter((v): v is number => v !== null);
@@ -285,7 +285,7 @@ const PetHealthBody = ({
         <HealthGraph
           dates={dates}
           healthValueData={vitalityData}
-          catNameData={catNameData}
+          petIdData={petIdData}
           petsData={petsData}
           targetPets={targetPets ?? null}
           setCurrentWeek={setCurrentWeek}
