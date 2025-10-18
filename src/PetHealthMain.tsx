@@ -16,15 +16,16 @@ interface Pet {
   meal: boolean | null;
   vitality: number | null;
   record: string | null;
+  memo: string | null;
   owner_id: number;
   pet_id: number;
 }
-
 
 const PetHealthMain: React.FC = () => {
   const [petsData, setPetsData] = useState<Pet[] | null>(null);
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [newPet, setNewPet] = useState<Pet | null>(null);
+  const [ownerId, setOwnerId] = useState<string | null | undefined>();
 
   const openModal = () => {
     const modal = document.getElementById("modal") as HTMLDialogElement | null;
@@ -35,13 +36,18 @@ const PetHealthMain: React.FC = () => {
 
   const fetchPets = async () => {
     const ownerId = localStorage.getItem("userId");
-    if(!ownerId){
+    setOwnerId(ownerId);
+
+    if (!ownerId) {
       alert("ログイン情報が見つかりません");
       window.location.href = "/login";
       return;
     }
 
-    const { data, error } = await supabase.from("pets").select("*").eq("owner_id", ownerId);
+    const { data, error } = await supabase
+      .from("pets")
+      .select("*")
+      .eq("owner_id", ownerId);
     if (error) {
       console.error("Supabase Fetch Error:", error.message);
       alert("データ取得に失敗しました。");
@@ -65,7 +71,11 @@ const PetHealthMain: React.FC = () => {
   };
 
   const addPet = async (newPetData: Partial<Pet>) => {
-    const { data, error } = await supabase.from("pets").insert([newPetData]).select().single();
+    const { data, error } = await supabase
+      .from("pets")
+      .insert([newPetData])
+      .select()
+      .single();
 
     if (error) {
       console.error("Supabase Insert Error:", error.message);
@@ -77,9 +87,6 @@ const PetHealthMain: React.FC = () => {
 
     await fetchPets();
   };
-
-
-  
 
   const handlePetSelected = (pet: Pet) => {
     setSelectedPet(pet);
@@ -95,6 +102,7 @@ const PetHealthMain: React.FC = () => {
         onChildSelectedPet={handlePetSelected}
         onChildAddPet={addPet}
         newPet={newPet}
+        ownerId={ownerId}
       />
       <SuccessModal
         SuccessModalOpen={openModal}

@@ -18,24 +18,21 @@ interface SelectPetsProps {
   petsData: Pet[];
   onPetSelect: (pet: Pet) => void;
   addPet: (newPetData: Partial<Pet>) => void;
+  ownerId: string | null | undefined;
 }
 
-const SelectPet = ({ petsData, onPetSelect, addPet }: SelectPetsProps) => {
+const SelectPet = ({ petsData, onPetSelect, addPet, ownerId }: SelectPetsProps) => {
   // const cats = catList[1]
 
   // for(let i = 0; i <= cats.length; i++){
   //   const catsName = cats[i].name;
   // }
 
-  if (!petsData || Object.keys(petsData).length < 2) {
-    return null;
-  }
-
   const [selectedPet, setSelectedPet] = useState<number | string | null>(null);
   const [showNameInput, setShowNameInput] = useState(false);
   const [newPetName, setNewPetName] = useState("");
 
-  const ownersPets = petsData.filter((pet) => pet.owner_id === 1);
+  const ownersPets = petsData.filter((pet) => pet.owner_id === Number(ownerId));
   const seen = new Set();
   const uniquePets = ownersPets.filter(
     (pet) => !seen.has(pet.pet_id) && seen.add(pet.pet_id)
@@ -107,7 +104,7 @@ const SelectPet = ({ petsData, onPetSelect, addPet }: SelectPetsProps) => {
                   meal: null,
                   vitality: null,
                   record: null,
-                  owner_id: 1,
+                  owner_id: Number(ownerId),
                   pet_id: ownersMaxPetId + 1,
                 };
                 

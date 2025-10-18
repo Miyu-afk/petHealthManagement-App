@@ -37,12 +37,12 @@ interface Pet {
 }
 
 interface petDataItem {
-  pet_id: number,
-  date: string | null,
-  memo: string | null,
-  mood: boolean | null,
-  poop: boolean | null,
-  meal: boolean | null,
+  pet_id: number;
+  date: string | null;
+  memo: string | null;
+  mood: boolean | null;
+  poop: boolean | null;
+  meal: boolean | null;
 }
 
 interface HealthGraphProps {
@@ -65,7 +65,7 @@ function HealthGraph({
   petDataItem,
 }: HealthGraphProps) {
   const allData = dates.map((date, i) => {
-    const memoItems = petDataItem.find(
+    const theDayDateItems = petDataItem.find(
       (m) => m.pet_id === petIdData[i] && m.date === date
     );
 
@@ -73,7 +73,7 @@ function HealthGraph({
       date,
       health: healthValueData[i],
       id: petIdData[i],
-      memo: memoItems ? memoItems.memo : "",
+      memo: theDayDateItems ? theDayDateItems.memo : "",
     };
   });
 
@@ -123,7 +123,7 @@ function HealthGraph({
         const thisYear = new Date().getFullYear();
         const formattedDate = `${thisYear}-${dateString.padStart(5, "0")}`;
 
-        const memoItem = petDataItem.find((m) => {
+        const theDayDateItem = petDataItem.find((m) => {
           if (!m.date) return false;
           const memoDate = new Date(m.date);
           const targetDate = new Date(formattedDate);
@@ -134,16 +134,16 @@ function HealthGraph({
           );
         });
 
+        const toMark = (v: boolean | null | undefined) => v === true ? "〇": v === false ? "×" : " - ";
+        const poopMark = toMark(theDayDateItem?.poop);
+        const mealMark = toMark(theDayDateItem?.meal);
+        const moodMark = toMark(theDayDateItem?.mood);
+        const memoText = theDayDateItem?.memo ?? "";
+
         if (targetPets) {
-          if (memoItem) {
             alert(
-              `${targetPets.name}ちゃん、${labelDate} けんこう度=${labelPetData} \n \n メモ: \n ${memoItem.memo}`
+              `【${targetPets.name}ちゃん】\n 日付:${labelDate} \n けんこう度:${labelPetData} \n \n ■日々の記録: \n きげん:${moodMark} トイレ:${poopMark} ごはん:${mealMark} \n \n ■メモ: \n ${memoText}`
             );
-          } else{
-            alert(
-              `${targetPets.name}ちゃん、${labelDate} けんこう度=${labelPetData} \n メモはありません`
-            );
-          }
         }
       }
     },

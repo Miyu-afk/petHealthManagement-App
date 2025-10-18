@@ -34,6 +34,7 @@ interface PetHealthBodyProps {
   onChildSelectedPet: (pet: Pet) => void;
   onChildAddPet: (newPetData: Partial<Pet>) => void;
   newPet: Pet | null;
+  ownerId: string | null | undefined;
 }
 
 const PetHealthBody = ({
@@ -43,6 +44,7 @@ const PetHealthBody = ({
   onChildSelectedPet,
   onChildAddPet,
   newPet,
+  ownerId,
 }: PetHealthBodyProps) => {
   if (!petsData) {
     return (
@@ -221,6 +223,7 @@ const PetHealthBody = ({
           petsData={petsData}
           onPetSelect={handlePetSelected}
           addPet={onChildAddPet}
+          ownerId={ownerId}
         />
       </div>
 
