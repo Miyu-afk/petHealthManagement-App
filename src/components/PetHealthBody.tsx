@@ -22,6 +22,7 @@ interface Pet {
   meal: boolean | null;
   vitality: number | null;
   record: string | null;
+  memo: string | null;
   owner_id: number;
   pet_id: number;
 }
@@ -72,28 +73,35 @@ const PetHealthBody = ({
     onChildSelectedPet(SelectedPet);
   };
 
-  const sortedPets = [...petsData].sort((a, b) => {
+  const validPets = petsData.filter(
+    (item) => item.record !== null && item.vitality !== null
+  );
+
+  const uniqueByData = validPets.reduce((map, pet) => {
+    const key = `${pet.pet_id}-${pet.record}`;
+    map.set(key, pet);
+    return map;
+  }, new Map<string, Pet>());
+
+  const uniquePets = Array.from(uniqueByData.values());
+
+  const finalPets = uniquePets.sort((a, b) => {
     const dateA = a.record ? new Date(a.record).getTime() : 0;
     const dateB = b.record ? new Date(b.record).getTime() : 0;
     return dateA - dateB;
   });
 
-  const validPets = sortedPets.filter(
-    (item) => item.record !== null && item.vitality !== null
-  );
-
-  const uniqueByData = validPets.reduce((acc, per) => {
-    const key = `${pet.pet_id}-${pet.record}`;
-    acc.set(key, pet);
-    return acc;
-  }, new Map<string, Pet>())
-
-  const finalPets = Array.from(uniqueByData.values());
-
-
   const dates = finalPets.map((item) => item.record as string);
   const petIdData = finalPets.map((item) => item.pet_id);
   const vitalityData = finalPets.map((item) => item.vitality as number);
+  const PetsData = finalPets.map((item) => ({
+    pet_id: item.pet_id,
+    date: item.record,
+    memo: item.memo,
+    mood: item.mood,
+    poop: item.poop,
+    meal: item.meal,
+  }));
 
   const healthObj = [
     {
@@ -261,6 +269,8 @@ const PetHealthBody = ({
               return;
             }
 
+            
+
             const dataToSave: Partial<Pet> = {
               name: targetPets.name,
               vitality: healthValue,
@@ -282,6 +292,7 @@ const PetHealthBody = ({
             addHealth(dataToSave);
             allClean();
             SuccessModalOpen();
+            
           }}
         />
         <NoCheckButton
@@ -296,10 +307,10 @@ const PetHealthBody = ({
           dates={dates}
           healthValueData={vitalityData}
           petIdData={petIdData}
-          petsData={petsData}
           targetPets={targetPets ?? null}
           setCurrentWeek={setCurrentWeek}
           currentWeek={currentWeek}
+          petDataItem={PetsData}
         />
       </div>
     </>

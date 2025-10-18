@@ -9,6 +9,7 @@ interface Pet {
   meal: boolean | null;
   vitality: number | null;
   record: string | null;
+  memo: string | null;
   owner_id: number;
   pet_id: number;
 }
@@ -39,6 +40,7 @@ const SelectPet = ({ petsData, onPetSelect, addPet }: SelectPetsProps) => {
   const uniquePets = ownersPets.filter(
     (pet) => !seen.has(pet.pet_id) && seen.add(pet.pet_id)
   );
+  
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;

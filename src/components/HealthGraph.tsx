@@ -31,18 +31,28 @@ interface Pet {
   meal: boolean | null;
   vitality: number | null;
   record: string | null;
+  memo: string | null;
   owner_id: number;
   pet_id: number;
 }
 
+interface petDataItem {
+  pet_id: number,
+  date: string | null,
+  memo: string | null,
+  mood: boolean | null,
+  poop: boolean | null,
+  meal: boolean | null,
+}
+
 interface HealthGraphProps {
-  petsData: Pet[] | null;
   dates: string[];
   healthValueData: number[];
   petIdData: number[];
   setCurrentWeek: Dispatch<SetStateAction<Date>>;
   currentWeek: Date;
   targetPets: Pet | null;
+  petDataItem: petDataItem[];
 }
 
 function HealthGraph({
@@ -52,43 +62,32 @@ function HealthGraph({
   setCurrentWeek,
   currentWeek,
   targetPets,
+  petDataItem,
 }: HealthGraphProps) {
-  const allData = dates.map((date, i) => ({
-    date,
-    health: healthValueData[i],
-    id: petIdData[i],
-  }));
+  const allData = dates.map((date, i) => {
+    const memoItems = petDataItem.find(
+      (m) => m.pet_id === petIdData[i] && m.date === date
+    );
 
-  const filteredData =
-    targetPets != null
-      ? allData.filter((item) => item.id === targetPets.pet_id)
-      : [];
-
-  console.log({
-    allData,
-    targetPets,
-    petIdData,
-    filteredDataBefore: allData.map((a) => a.id),
-    filterCondition: targetPets ? targetPets.pet_id : null,
-  });
-
-  const weekStart = new Date(currentWeek);
-  weekStart.setDate(currentWeek.getDate() - 7);
-
-  const weekData = filteredData.filter((item) => {
-    const recordDate = new Date(item.date.replace(" ", "T"));
-    return recordDate >= weekStart && recordDate <= currentWeek;
-  });
-
-  const labels = weekData.map((item) => {
-    const date = new Date(item.date.replace(" ", "T"));
-    date.setHours(date.getHours() + 9);
-    return `${date.getMonth() + 1}月${date.getDate()}日`;
+    return {
+      date,
+      health: healthValueData[i],
+      id: petIdData[i],
+      memo: memoItems ? memoItems.memo : "",
+    };
   });
 
   const petData = targetPets
     ? allData.filter((item) => item.id === targetPets.pet_id)
     : [];
+
+  const weekStart = new Date(currentWeek);
+  weekStart.setDate(currentWeek.getDate() - 7);
+
+  const weekData = petData.filter((item) => {
+    const recordDate = new Date(item.date.replace(" ", "T"));
+    return recordDate >= weekStart && recordDate <= currentWeek;
+  });
 
   const graphData = {
     labels: petData
@@ -120,10 +119,31 @@ function HealthGraph({
         const index = elements[0].index;
         const labelDate = graphData.labels[index];
         const labelPetData = graphData.datasets[0].data[index];
-        if (targetPets) {
-          alert(
-            `${targetPets.name}ちゃん、${labelDate} けんこう度=${labelPetData}`
+        const dateString = labelDate.replace("月", "-").replace("日", "");
+        const thisYear = new Date().getFullYear();
+        const formattedDate = `${thisYear}-${dateString.padStart(5, "0")}`;
+
+        const memoItem = petDataItem.find((m) => {
+          if (!m.date) return false;
+          const memoDate = new Date(m.date);
+          const targetDate = new Date(formattedDate);
+          return (
+            memoDate.getFullYear() === targetDate.getFullYear() &&
+            memoDate.getMonth() === targetDate.getMonth() &&
+            memoDate.getDate() === targetDate.getDate()
           );
+        });
+
+        if (targetPets) {
+          if (memoItem) {
+            alert(
+              `${targetPets.name}ちゃん、${labelDate} けんこう度=${labelPetData} \n \n メモ: \n ${memoItem.memo}`
+            );
+          } else{
+            alert(
+              `${targetPets.name}ちゃん、${labelDate} けんこう度=${labelPetData} \n メモはありません`
+            );
+          }
         }
       }
     },
