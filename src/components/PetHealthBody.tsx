@@ -217,7 +217,7 @@ const PetHealthBody = ({
 
   return (
     <>
-      <div className="flex justify-center mt-18 text-2xl">
+      <div className="flex justify-center mt-25 text-2xl">
         <SelectPet
           key={petsData?.length}
           petsData={petsData}
@@ -226,6 +226,7 @@ const PetHealthBody = ({
           ownerId={ownerId}
         />
       </div>
+      
 
       <div className="flex justify-center mt-5 text-l">
         <p>おなまえ：{targetPets ? targetPets.name : "???"}ちゃん</p>

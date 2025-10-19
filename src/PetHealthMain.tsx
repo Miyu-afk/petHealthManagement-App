@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import React from "react";
 import { supabase } from "./lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
+import PetImageUploader from "./components/PetImageUploader";
 
 // const API_URL = "http://localhost:3000/pets";
 
@@ -20,6 +21,7 @@ interface Pet {
   memo: string | null;
   owner_id: number;
   pet_id: number;
+  image_path?: string | null;
 }
 
 interface UsersInfo {
@@ -119,10 +121,11 @@ const PetHealthMain: React.FC = () => {
   const handlePetSelected = (pet: Pet) => {
     setSelectedPet(pet);
   };
+  
 
   return (
     <>
-      <PetHealthHeader userInfo={userInfo} />
+      <PetHealthHeader userInfo={userInfo} selectedPet={selectedPet} ownerId={ownerId} handleSetPets={setPetsData}/>
       <PetHealthBody
         SuccessModalOpen={openModal}
         addHealth={addHealth}

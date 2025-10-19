@@ -1,3 +1,19 @@
+import PetImageUploader from "./PetImageUploader";
+
+interface Pet {
+  id: number;
+  name: string;
+  mood: boolean | null;
+  poop: boolean | null;
+  meal: boolean | null;
+  vitality: number | null;
+  record: string | null;
+  memo: string | null;
+  owner_id: number;
+  pet_id: number;
+  image_path?: string | null;
+}
+
 interface UsersInfo {
   id: number;
   name: string;
@@ -5,9 +21,17 @@ interface UsersInfo {
 
 interface HeaderProps {
   userInfo: UsersInfo | null;
+  selectedPet: Pet | null;
+  ownerId: string | null | undefined;
+  handleSetPets: React.Dispatch<React.SetStateAction<Pet[] | null>>;
 }
 
-const PetHealthHeader = ({ userInfo }: HeaderProps) => {
+const PetHealthHeader = ({
+  userInfo,
+  selectedPet,
+  ownerId,
+  handleSetPets,
+}: HeaderProps) => {
   const handleLogout = () => {
     localStorage.removeItem("userId");
     localStorage.removeItem("user_name");
@@ -43,11 +67,28 @@ const PetHealthHeader = ({ userInfo }: HeaderProps) => {
           </p>
         </div>
       )}
-      <div className="flex justify-center items-center p-8px">
-        <div className="w-[120px] h-[120px] object-cover flex justify-center items-center mt-22">
-          <img src="http://localhost:8080/cat.png"></img>
-        </div>
-      </div>
+      <div className="flex items-center justify-center mt-22 p-8px">
+        {selectedPet && (
+        <PetImageUploader
+          petId={selectedPet ? selectedPet.pet_id : 0}
+          ownerId={ownerId!}
+          currentImagePath={selectedPet ? selectedPet.image_path : ""}
+          onUploadComplete={(newPath: string) => {
+            if (selectedPet) {
+              handleSetPets((prev) =>
+                prev
+                  ? prev?.map((p) =>
+                      p.pet_id === selectedPet.pet_id
+                        ? { ...p, image_path: newPath }
+                        : p
+                    )
+                  : prev
+              );
+            }
+          }}
+        />
+        )}
+            </div>
     </header>
   );
 };
