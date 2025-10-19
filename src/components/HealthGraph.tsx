@@ -134,16 +134,17 @@ function HealthGraph({
           );
         });
 
-        const toMark = (v: boolean | null | undefined) => v === true ? "〇": v === false ? "×" : " - ";
+        const toMark = (v: boolean | null | undefined) =>
+          v === true ? "〇" : v === false ? "×" : " - ";
         const poopMark = toMark(theDayDateItem?.poop);
         const mealMark = toMark(theDayDateItem?.meal);
         const moodMark = toMark(theDayDateItem?.mood);
         const memoText = theDayDateItem?.memo ?? "";
 
         if (targetPets) {
-            alert(
-              `【${targetPets.name}ちゃん】\n 日付:${labelDate} \n けんこう度:${labelPetData} \n \n ■日々の記録: \n きげん:${moodMark} トイレ:${poopMark} ごはん:${mealMark} \n \n ■メモ: \n ${memoText}`
-            );
+          alert(
+            `【${targetPets.name}ちゃん】\n 日付:${labelDate} \n けんこう度:${labelPetData} \n \n ■日々の記録: \n きげん:${moodMark} トイレ:${poopMark} ごはん:${mealMark} \n \n ■メモ: \n ${memoText}`
+          );
         }
       }
     },

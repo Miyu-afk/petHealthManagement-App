@@ -7,6 +7,8 @@ export const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(true);
+  const [hideButton, setHideButton] = useState(false);
   const [userName, setUserName] = useState("");
 
   const navigate = useNavigate();
@@ -20,7 +22,6 @@ export const Login = () => {
       .select("*")
       .eq("id", userId)
       .eq("pass", password)
-      .eq("name", userName)
       .single();
 
     if (error || !data) {
@@ -32,7 +33,13 @@ export const Login = () => {
     localStorage.setItem("userId", data.id);
     localStorage.setItem("user_name", data.name);
     localStorage.setItem("userName", data.name);
-    navigate("/");
+    navigate("/main");
+  };
+
+  const handleNewOrLogin = () => {
+    setShowLoginForm(false);
+    setShowCreateForm(true);
+    setHideButton(true);
   };
 
   const handleNewCreateUser = async (event: FormEvent) => {
@@ -44,7 +51,6 @@ export const Login = () => {
       .insert([{ pass: password, name: userName }])
       .select()
       .single();
-      
 
     if (error || !data) {
       setError("新規作成に失敗しました");
@@ -53,7 +59,7 @@ export const Login = () => {
     }
 
     localStorage.setItem("userId", data.id);
-    navigate("/");
+    navigate("/main");
   };
   //   axios.post("http://127.0.0.1:3000/accounts/login/", {
   //     owner_id: userId,
@@ -71,31 +77,35 @@ export const Login = () => {
       <p className="font-bold tracking-wide text-teal-500">
         みんなの けんこうかんり
       </p>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-5">
-        <input
-          type="text"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-          placeholder="ユーザーID"
-          required
-          className="input input-bordered w-64"
-        />
-        <input
-          type="text"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="パスワード"
-          required
-          className="input input-bordered w-64"
-        />
-        <button type="submit" className="btn btn-accent w-64">
-          ログイン
-        </button>
-      </form>
+      {showLoginForm && (
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-5">
+          <input
+            type="text"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+            placeholder="ユーザーID"
+            required
+            className="input input-bordered w-64"
+          />
+          <input
+            type="text"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="パスワード"
+            required
+            className="input input-bordered w-64"
+          />
+          <button type="submit" className="btn btn-accent w-64">
+            ログイン
+          </button>
+        </form>
+      )}
 
-      <button className="btn w-64 mt-5" onClick={() => setShowCreateForm(true)}>
-        新しく作る
-      </button>
+      {!hideButton && (
+        <button className="btn w-64 mt-5" onClick={handleNewOrLogin}>
+          新しく作る
+        </button>
+      )}
 
       {showCreateForm && (
         <form

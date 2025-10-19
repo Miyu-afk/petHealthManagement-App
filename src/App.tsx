@@ -6,8 +6,8 @@ import PetHealthMain from "./PetHealthMain"
 const App: React.FC =() => {
   return(
     <Routes>
-      <Route path="/" element={<PetHealthMain />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/main" element={<PetHealthMain />} />
+      <Route path="/" element={<Login />} />
     </Routes>
   )
 }

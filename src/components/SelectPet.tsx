@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CheckButton from "./CheckButton";
 
 interface Pet {
@@ -21,7 +21,12 @@ interface SelectPetsProps {
   ownerId: string | null | undefined;
 }
 
-const SelectPet = ({ petsData, onPetSelect, addPet, ownerId }: SelectPetsProps) => {
+const SelectPet = ({
+  petsData,
+  onPetSelect,
+  addPet,
+  ownerId,
+}: SelectPetsProps) => {
   // const cats = catList[1]
 
   // for(let i = 0; i <= cats.length; i++){
@@ -37,11 +42,10 @@ const SelectPet = ({ petsData, onPetSelect, addPet, ownerId }: SelectPetsProps) 
   const uniquePets = ownersPets.filter(
     (pet) => !seen.has(pet.pet_id) && seen.add(pet.pet_id)
   );
-  
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
-    setSelectedPet(value === "new" ? "new" : Number(value))
+    setSelectedPet(value === "new" ? "new" : Number(value));
   };
 
   const handleClickSelect = () => {
@@ -57,6 +61,13 @@ const SelectPet = ({ petsData, onPetSelect, addPet, ownerId }: SelectPetsProps) 
       onPetSelect(selected);
     }
   };
+
+  useEffect(() => {
+    if (uniquePets.length === 0) {
+      setSelectedPet("new");
+      setShowNameInput(true);
+    }
+  }, [uniquePets]);
 
   return (
     <>
@@ -92,9 +103,9 @@ const SelectPet = ({ petsData, onPetSelect, addPet, ownerId }: SelectPetsProps) 
               onClick={() => {
                 if (!newPetName) return alert("名前を入力してください");
 
-                const ownersMaxPetId =
-                  ownersPets.length > 0
-                    ? Math.max(...ownersPets.map((p) => p.pet_id))
+                const maxPetId =
+                  petsData.length > 0
+                    ? Math.max(...petsData.map((p) => p.pet_id))
                     : 0;
 
                 const newPet: Partial<Pet> = {
@@ -105,9 +116,9 @@ const SelectPet = ({ petsData, onPetSelect, addPet, ownerId }: SelectPetsProps) 
                   vitality: null,
                   record: null,
                   owner_id: Number(ownerId),
-                  pet_id: ownersMaxPetId + 1,
+                  pet_id: maxPetId + 1,
                 };
-                
+
                 addPet(newPet);
                 setShowNameInput(false);
                 setNewPetName("");

@@ -1,13 +1,22 @@
-const PetHealthHeader = () => {
+interface UsersInfo {
+  id: number;
+  name: string;
+}
+
+interface HeaderProps {
+  userInfo: UsersInfo | null;
+}
+
+const PetHealthHeader = ({ userInfo }: HeaderProps) => {
   const handleLogout = () => {
     localStorage.removeItem("userId");
     localStorage.removeItem("user_name");
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   return (
     <header className="bg-teal-500 h-35">
-      <button className="absolute top-5 left-5" onClick={(handleLogout)}>
+      <button className="absolute top-5 left-5" onClick={handleLogout}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -24,10 +33,18 @@ const PetHealthHeader = () => {
         </svg>
       </button>
       <div className="flex items-center justify-center">
-      <p className="absolute top-5 text-white">みんなの けんこうかんり</p>
+        <p className="absolute top-5 text-white">みんなの けんこうかんり</p>
       </div>
+      {userInfo && (
+        <div className="flex items-center justify-center">
+          <p className="absolute top-10 text-white">user id : {userInfo.id}</p>
+          <p className="absolute top-15 text-white">
+            お名前 : {userInfo.name} さん
+          </p>
+        </div>
+      )}
       <div className="flex justify-center items-center p-8px">
-        <div className="w-[120px] h-[120px] object-cover flex justify-center items-center mt-13">
+        <div className="w-[120px] h-[120px] object-cover flex justify-center items-center mt-22">
           <img src="http://localhost:8080/cat.png"></img>
         </div>
       </div>

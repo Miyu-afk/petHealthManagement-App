@@ -272,8 +272,6 @@ const PetHealthBody = ({
               return;
             }
 
-            
-
             const dataToSave: Partial<Pet> = {
               name: targetPets.name,
               vitality: healthValue,
@@ -295,7 +293,6 @@ const PetHealthBody = ({
             addHealth(dataToSave);
             allClean();
             SuccessModalOpen();
-            
           }}
         />
         <NoCheckButton

@@ -5,6 +5,7 @@ import SuccessModal from "./components/SuccessModal";
 import { useState, useEffect } from "react";
 import React from "react";
 import { supabase } from "./lib/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 // const API_URL = "http://localhost:3000/pets";
 
@@ -21,11 +22,20 @@ interface Pet {
   pet_id: number;
 }
 
+interface UsersInfo {
+  id: number;
+  name: string;
+  pass: string;
+}
+
 const PetHealthMain: React.FC = () => {
   const [petsData, setPetsData] = useState<Pet[] | null>(null);
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [newPet, setNewPet] = useState<Pet | null>(null);
   const [ownerId, setOwnerId] = useState<string | null | undefined>();
+  const [userInfo, setUserInfo] = useState<UsersInfo | null>(null);
+
+  const navigate = useNavigate();
 
   const openModal = () => {
     const modal = document.getElementById("modal") as HTMLDialogElement | null;
@@ -38,9 +48,8 @@ const PetHealthMain: React.FC = () => {
     const ownerId = localStorage.getItem("userId");
     setOwnerId(ownerId);
 
-    if (!ownerId) {
-      alert("ログイン情報が見つかりません");
-      window.location.href = "/login";
+    if (!ownerId && location.pathname !== "/") {
+      navigate("/");
       return;
     }
 
@@ -59,6 +68,26 @@ const PetHealthMain: React.FC = () => {
   useEffect(() => {
     fetchPets();
   }, []);
+
+  const fetchUsers = async () => {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", ownerId)
+      .single();
+    if (error) {
+      console.error("Supabase Fetch Error:", error.message);
+      alert("データ取得に失敗しました。");
+      return;
+    }
+    setUserInfo(data as UsersInfo);
+  };
+
+  useEffect(() => {
+    if (ownerId) {
+      fetchUsers();
+    }
+  }, [ownerId]);
 
   const addHealth = async (newHealthData: Partial<Pet>) => {
     const { error } = await supabase.from("pets").insert([newHealthData]);
@@ -94,7 +123,7 @@ const PetHealthMain: React.FC = () => {
 
   return (
     <>
-      <PetHealthHeader />
+      <PetHealthHeader userInfo={userInfo} />
       <PetHealthBody
         SuccessModalOpen={openModal}
         addHealth={addHealth}
