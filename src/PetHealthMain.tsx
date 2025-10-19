@@ -25,7 +25,6 @@ interface Pet {
 interface UsersInfo {
   id: number;
   name: string;
-  pass: string;
 }
 
 const PetHealthMain: React.FC = () => {
@@ -72,7 +71,7 @@ const PetHealthMain: React.FC = () => {
   const fetchUsers = async () => {
     const { data, error } = await supabase
       .from("users")
-      .select("*")
+      .select("id, name")
       .eq("id", ownerId)
       .single();
     if (error) {
