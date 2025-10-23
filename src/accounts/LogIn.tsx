@@ -16,24 +16,43 @@ export const Login = () => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
+    try {
+      const email = `${userId}@example.local`;
 
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", userId)
-      .eq("pass", password)
-      .single();
+      const { data: authData, error: authError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-    if (error || !data) {
-      setError("ユーザーIDまたはパスワードがちがいます");
-      console.error(error);
-      return;
+      if (authError) {
+        setError("Authログインに失敗しました。");
+        console.error(authError);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId)
+        .eq("pass", password)
+        .single();
+
+      if (error || !data) {
+        setError("ユーザーIDまたはパスワードがちがいます");
+        console.error(error);
+        return;
+      }
+
+      localStorage.setItem("userId", data.id);
+      localStorage.setItem("user_name", data.name);
+      localStorage.setItem("userName", data.name);
+      localStorage.setItem("authUid", authData.user.id);
+      navigate("/main");
+    } catch (err) {
+      console.error(err);
+      setError("ログイン中にエラーが発生しました。しました。");
     }
-
-    localStorage.setItem("userId", data.id);
-    localStorage.setItem("user_name", data.name);
-    localStorage.setItem("userName", data.name);
-    navigate("/main");
   };
 
   const handleNewOrLogin = () => {
@@ -46,20 +65,42 @@ export const Login = () => {
     event.preventDefault();
     setError("");
 
-    const { data, error } = await supabase
-      .from("users")
-      .insert([{ pass: password, name: userName }])
-      .select()
-      .single();
+    try {
+      const email = `${userName}-${Date.now()}@example.local`;
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    if (error || !data) {
-      setError("新規作成に失敗しました");
-      console.error(error);
-      return;
+      if (authError || !authData.user) {
+        setError("Auth登録に失敗しました。");
+        console.error(authError);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("users")
+        .insert([
+          { pass: password, name: userName, auth_id: authData.user?.id },
+        ])
+        .select()
+        .single();
+
+      if (error || !data) {
+        setError("新規作成に失敗しました");
+        console.error(error);
+        return;
+      }
+
+      localStorage.setItem("userId", data.id);
+      localStorage.setItem("userName", userName);
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("authUid", authData.user?.id)
+      navigate("/main");
+    } catch (err) {
+      console.error(err);
+      setError("新規作成中にエラーが発生しました。");
     }
-
-    localStorage.setItem("userId", data.id);
-    navigate("/main");
   };
   //   axios.post("http://127.0.0.1:3000/accounts/login/", {
   //     owner_id: userId,

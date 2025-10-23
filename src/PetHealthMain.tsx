@@ -38,6 +38,7 @@ const PetHealthMain: React.FC = () => {
 
   const navigate = useNavigate();
 
+
   const openModal = () => {
     const modal = document.getElementById("modal") as HTMLDialogElement | null;
     if (modal) {
@@ -121,6 +122,7 @@ const PetHealthMain: React.FC = () => {
   const handlePetSelected = (pet: Pet) => {
     setSelectedPet(pet);
   };
+
   
 
   return (

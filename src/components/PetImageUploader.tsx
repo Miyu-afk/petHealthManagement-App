@@ -17,6 +17,8 @@ const PetImageUploader = ({
   const [previewUtl, setPreviewUrl] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string>("");
 
+  const authUid = localStorage.getItem("authUid");
+
   useEffect(() => {
     if (!currentImagePath) return;
 
@@ -35,12 +37,17 @@ const PetImageUploader = ({
   }, [currentImagePath]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if(!authUid){
+      alert("Auth UIDがありません。ログインしてください。");
+      return;
+    }
+    
     const file = e.target.files?.[0];
     if (!file) return;
 
     setPreviewUrl(URL.createObjectURL(file));
 
-    const filePath = `user_${ownerId}/pet_${petId}_${file.name}`;
+    const filePath = `user_${authUid}/pet_${petId}_${file.name}`;
 
     const { data, error } = await supabase.storage
       .from("pet-images")
