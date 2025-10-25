@@ -25,7 +25,7 @@ export const Login = () => {
           password,
         });
 
-      if (authError) {
+      if (authError || !authData.user) {
         setError("Authログインに失敗しました。");
         console.error(authError);
         return;
@@ -44,8 +44,7 @@ export const Login = () => {
         return;
       }
 
-      localStorage.setItem("userId", data.id);
-      localStorage.setItem("user_name", data.name);
+      localStorage.setItem("userId", data.id.toString());
       localStorage.setItem("userName", data.name);
       localStorage.setItem("authUid", authData.user.id);
       navigate("/main");

@@ -7,7 +7,7 @@ import GoodButton from "./GoodButton";
 import GoodButtonOn from "./GoodButtonOn";
 import BadButton from "./BadButton";
 import BadButtonOn from "./BadButtonOn";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import ToggleButton from "./ToggleButton";
 import CheckButton from "./CheckButton";
 import NoCheckButton from "./NoCheckButton";
@@ -23,7 +23,7 @@ interface Pet {
   vitality: number | null;
   record: string | null;
   memo: string | null;
-  owner_id: number;
+  owner_id: string;
   pet_id: number;
 }
 
@@ -292,6 +292,8 @@ const PetHealthBody = ({
             else if (mealBadOn) dataToSave.meal = false;
 
             addHealth(dataToSave);
+            console.log(memoData);
+            
             allClean();
             SuccessModalOpen();
           }}

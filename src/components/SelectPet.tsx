@@ -10,7 +10,7 @@ interface Pet {
   vitality: number | null;
   record: string | null;
   memo: string | null;
-  owner_id: number;
+  owner_id: string;
   pet_id: number;
 }
 
@@ -36,13 +36,15 @@ const SelectPet = ({
   const [selectedPet, setSelectedPet] = useState<number | string | null>(null);
   const [showNameInput, setShowNameInput] = useState(false);
   const [newPetName, setNewPetName] = useState("");
+  const authUid = localStorage.getItem("authUid");
+  
 
-  const ownersPets = petsData.filter((pet) => pet.owner_id === Number(ownerId));
-  const seen = new Set();
+  const ownersPets = petsData.filter((pet) => pet.owner_id === authUid);
+  const seen = new Set<number>();
   const uniquePets = ownersPets.filter(
     (pet) => !seen.has(pet.pet_id) && seen.add(pet.pet_id)
   );
-
+  
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSelectedPet(value === "new" ? "new" : Number(value));
@@ -68,6 +70,8 @@ const SelectPet = ({
       setShowNameInput(true);
     }
   }, [uniquePets]);
+
+  
 
   return (
     <>
@@ -108,6 +112,7 @@ const SelectPet = ({
                     ? Math.max(...petsData.map((p) => p.pet_id))
                     : 0;
 
+              if(authUid){
                 const newPet: Partial<Pet> = {
                   name: newPetName,
                   mood: null,
@@ -115,13 +120,14 @@ const SelectPet = ({
                   meal: null,
                   vitality: null,
                   record: null,
-                  owner_id: Number(ownerId),
+                  owner_id: authUid,
                   pet_id: maxPetId + 1,
                 };
 
                 addPet(newPet);
                 setShowNameInput(false);
                 setNewPetName("");
+              }
               }}
             />
           </div>

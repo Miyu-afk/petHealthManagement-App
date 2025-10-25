@@ -32,10 +32,9 @@ interface Pet {
   vitality: number | null;
   record: string | null;
   memo: string | null;
-  owner_id: number;
+  owner_id: string;
   pet_id: number;
 }
-
 interface petDataItem {
   pet_id: number;
   date: string | null;
@@ -65,10 +64,18 @@ function HealthGraph({
   petDataItem,
 }: HealthGraphProps) {
   const allData = dates.map((date, i) => {
-    const theDayDateItems = petDataItem.find(
-      (m) => m.pet_id === petIdData[i] && m.date === date
-    );
-
+    const currentPetId = petIdData[i];
+    const theDayDateItems = petDataItem.find((m) => {
+      if (!m.date) return;
+      const mDate = new Date();
+      const d = new Date(date);
+      return (
+        m.pet_id === currentPetId &&
+        mDate.getFullYear() === d.getFullYear() &&
+        mDate.getMonth() === d.getMonth() &&
+        mDate.getDate() === d.getDate()
+      );
+    });
     return {
       date,
       health: healthValueData[i],
@@ -127,6 +134,7 @@ function HealthGraph({
           if (!m.date) return false;
           const memoDate = new Date(m.date);
           const targetDate = new Date(formattedDate);
+
           return (
             memoDate.getFullYear() === targetDate.getFullYear() &&
             memoDate.getMonth() === targetDate.getMonth() &&

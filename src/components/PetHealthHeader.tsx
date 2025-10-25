@@ -1,5 +1,4 @@
 import PetImageUploader from "./PetImageUploader";
-
 interface Pet {
   id: number;
   name: string;
@@ -9,10 +8,11 @@ interface Pet {
   vitality: number | null;
   record: string | null;
   memo: string | null;
-  owner_id: number;
+  owner_id: string;
   pet_id: number;
   image_path?: string | null;
 }
+
 
 interface UsersInfo {
   id: number;

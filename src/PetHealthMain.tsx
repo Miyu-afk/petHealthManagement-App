@@ -19,7 +19,7 @@ interface Pet {
   vitality: number | null;
   record: string | null;
   memo: string | null;
-  owner_id: number;
+  owner_id: string;
   pet_id: number;
   image_path?: string | null;
 }
@@ -45,20 +45,23 @@ const PetHealthMain: React.FC = () => {
       modal.showModal();
     }
   };
+  const authId = localStorage.getItem("authUid");
 
   const fetchPets = async () => {
     const ownerId = localStorage.getItem("userId");
     setOwnerId(ownerId);
 
-    if (!ownerId && location.pathname !== "/") {
+    if (!authId && location.pathname !== "/") {
       navigate("/");
       return;
     }
+    
 
     const { data, error } = await supabase
       .from("pets")
       .select("*")
-      .eq("owner_id", ownerId);
+      .eq("owner_id", authId);
+      
     if (error) {
       console.error("Supabase Fetch Error:", error.message);
       alert("データ取得に失敗しました。");
@@ -66,16 +69,19 @@ const PetHealthMain: React.FC = () => {
     }
     setPetsData(data as Pet[]);
   };
+  
 
   useEffect(() => {
     fetchPets();
   }, []);
 
   const fetchUsers = async () => {
+    if(!authId) return;
+
     const { data, error } = await supabase
       .from("users")
-      .select("id, name")
-      .eq("id", ownerId)
+      .select("id, name, auth_user_id")
+      .eq("auth_user_id", authId)
       .single();
     if (error) {
       console.error("Supabase Fetch Error:", error.message);
@@ -86,10 +92,10 @@ const PetHealthMain: React.FC = () => {
   };
 
   useEffect(() => {
-    if (ownerId) {
+    if (authId) {
       fetchUsers();
     }
-  }, [ownerId]);
+  }, [authId]);
 
   const addHealth = async (newHealthData: Partial<Pet>) => {
     const { error } = await supabase.from("pets").insert([newHealthData]);
@@ -122,6 +128,7 @@ const PetHealthMain: React.FC = () => {
   const handlePetSelected = (pet: Pet) => {
     setSelectedPet(pet);
   };
+
 
   
 

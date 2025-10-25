@@ -8,7 +8,8 @@ interface Pet {
   meal: boolean | null;
   vitality: number | null;
   record: string | null;
-  owner_id: number;
+  memo: string | null;
+  owner_id: string;
   pet_id: number;
 }
 
