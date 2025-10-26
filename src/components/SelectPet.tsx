@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import CheckButton from "./CheckButton";
+import { supabase } from "../lib/supabaseClient";
 
 interface Pet {
   id: number;
@@ -21,12 +22,7 @@ interface SelectPetsProps {
   ownerId: string | null | undefined;
 }
 
-const SelectPet = ({
-  petsData,
-  onPetSelect,
-  addPet,
-  ownerId,
-}: SelectPetsProps) => {
+const SelectPet = ({ petsData, onPetSelect, addPet }: SelectPetsProps) => {
   // const cats = catList[1]
 
   // for(let i = 0; i <= cats.length; i++){
@@ -37,14 +33,13 @@ const SelectPet = ({
   const [showNameInput, setShowNameInput] = useState(false);
   const [newPetName, setNewPetName] = useState("");
   const authUid = localStorage.getItem("authUid");
-  
 
   const ownersPets = petsData.filter((pet) => pet.owner_id === authUid);
   const seen = new Set<number>();
   const uniquePets = ownersPets.filter(
     (pet) => !seen.has(pet.pet_id) && seen.add(pet.pet_id)
   );
-  
+
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSelectedPet(value === "new" ? "new" : Number(value));
@@ -70,8 +65,6 @@ const SelectPet = ({
       setShowNameInput(true);
     }
   }, [uniquePets]);
-
-  
 
   return (
     <>
@@ -104,30 +97,35 @@ const SelectPet = ({
             />
 
             <CheckButton
-              onClick={() => {
+              onClick={async () => {
                 if (!newPetName) return alert("名前を入力してください");
 
-                const maxPetId =
-                  petsData.length > 0
-                    ? Math.max(...petsData.map((p) => p.pet_id))
+                const { data: allPetData } = await supabase
+                  .from("pets")
+                  .select("*")
+
+                if (!allPetData) return;
+                const maxPet =
+                  allPetData.length > 0
+                    ? Math.max(...allPetData.map((p) => p.pet_id))
                     : 0;
 
-              if(authUid){
-                const newPet: Partial<Pet> = {
-                  name: newPetName,
-                  mood: null,
-                  poop: null,
-                  meal: null,
-                  vitality: null,
-                  record: null,
-                  owner_id: authUid,
-                  pet_id: maxPetId + 1,
-                };
+                if (authUid) {
+                  const newPet: Partial<Pet> = {
+                    name: newPetName,
+                    mood: null,
+                    poop: null,
+                    meal: null,
+                    vitality: null,
+                    record: null,
+                    owner_id: authUid,
+                    pet_id: maxPet + 1,
+                  };
 
-                addPet(newPet);
-                setShowNameInput(false);
-                setNewPetName("");
-              }
+                  addPet(newPet);
+                  setShowNameInput(false);
+                  setNewPetName("");
+                }
               }}
             />
           </div>

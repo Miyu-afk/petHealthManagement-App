@@ -10,6 +10,7 @@ export const Login = () => {
   const [showLoginForm, setShowLoginForm] = useState(true);
   const [hideButton, setHideButton] = useState(false);
   const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
 
   const navigate = useNavigate();
 
@@ -17,7 +18,7 @@ export const Login = () => {
     event.preventDefault();
     setError("");
     try {
-      const email = `${userId}@example.local`;
+      const email = `${userEmail}`;
 
       const { data: authData, error: authError } =
         await supabase.auth.signInWithPassword({
@@ -34,7 +35,7 @@ export const Login = () => {
       const { data, error } = await supabase
         .from("users")
         .select("*")
-        .eq("id", userId)
+        .eq("user_email", userEmail)
         .eq("pass", password)
         .single();
 
@@ -65,7 +66,7 @@ export const Login = () => {
     setError("");
 
     try {
-      const email = `${userName}-${Date.now()}@example.local`;
+      const email = `${userEmail}`;
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -80,7 +81,7 @@ export const Login = () => {
       const { data, error } = await supabase
         .from("users")
         .insert([
-          { pass: password, name: userName, auth_id: authData.user?.id },
+          { pass: password, name: userName, auth_user_id: authData.user?.id, user_email: userEmail },
         ])
         .select()
         .single();
@@ -121,9 +122,9 @@ export const Login = () => {
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-5">
           <input
             type="text"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            placeholder="ユーザーID"
+            value={userEmail}
+            onChange={(e) => setUserEmail(e.target.value)}
+            placeholder="Emailアドレス"
             required
             className="input input-bordered w-64"
           />
@@ -157,6 +158,14 @@ export const Login = () => {
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
             placeholder="お名前"
+            required
+            className="input input-bordered w-64"
+          />
+          <input
+            type="text"
+            value={userEmail}
+            onChange={(e) => setUserEmail(e.target.value)}
+            placeholder="Emailアドレス"
             required
             className="input input-bordered w-64"
           />

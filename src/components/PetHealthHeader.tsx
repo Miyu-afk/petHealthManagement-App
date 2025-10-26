@@ -1,4 +1,7 @@
 import PetImageUploader from "./PetImageUploader";
+import { supabase } from "../lib/supabaseClient";
+import { useState } from "react";
+
 interface Pet {
   id: number;
   name: string;
@@ -12,7 +15,6 @@ interface Pet {
   pet_id: number;
   image_path?: string | null;
 }
-
 
 interface UsersInfo {
   id: number;
@@ -38,6 +40,26 @@ const PetHealthHeader = ({
     window.location.href = "/";
   };
 
+  const [selectedPetId, setSelectedPetId] = useState<number | null>(null);
+  const [currentImagePath, setCurrentImagePath] = useState<string | null>(null);
+
+  const handlePetSelect = async (petId: number) => {
+    setSelectedPetId(petId);
+
+    const { data, error } = await supabase
+      .from("pets")
+      .select("image_path")
+      .eq("pet_id", petId)
+      .single();
+
+    if (error) {
+      console.error(error);
+      setCurrentImagePath(null);
+    } else {
+      setCurrentImagePath(data.image_path);
+    }
+  };
+
   return (
     <header className="bg-teal-500 h-35">
       <button className="absolute top-5 left-5" onClick={handleLogout}>
@@ -61,34 +83,20 @@ const PetHealthHeader = ({
       </div>
       {userInfo && (
         <div className="flex items-center justify-center">
-          <p className="absolute top-10 text-white">user id : {userInfo.id}</p>
-          <p className="absolute top-15 text-white">
+          <p className="absolute top-10 text-white">
             お名前 : {userInfo.name} さん
           </p>
         </div>
       )}
-      <div className="flex items-center justify-center mt-22 p-8px">
+
+      <div className="flex items-center justify-center mt-18 p-8px">
         {selectedPet && (
-        <PetImageUploader
-          petId={selectedPet ? selectedPet.pet_id : 0}
-          ownerId={ownerId!}
-          currentImagePath={selectedPet ? selectedPet.image_path : ""}
-          onUploadComplete={(newPath: string) => {
-            if (selectedPet) {
-              handleSetPets((prev) =>
-                prev
-                  ? prev?.map((p) =>
-                      p.pet_id === selectedPet.pet_id
-                        ? { ...p, image_path: newPath }
-                        : p
-                    )
-                  : prev
-              );
-            }
-          }}
-        />
+          <PetImageUploader
+            petId={selectedPet ? selectedPet.pet_id : 0}
+            currentImagePath={selectedPet.image_path ?? ""}
+             onUploadComplete={(newPath) => setCurrentImagePath(newPath)} />
         )}
-            </div>
+      </div>
     </header>
   );
 };

@@ -243,6 +243,7 @@ const PetHealthBody = ({
       </div>
       <div className="flex justify-center mt-5">
         <Memo
+          value={memoData}
           onChange={(e) => {
             const textValue = e.target.value;
             setMemoData(textValue);
@@ -292,7 +293,6 @@ const PetHealthBody = ({
             else if (mealBadOn) dataToSave.meal = false;
 
             addHealth(dataToSave);
-            console.log(memoData);
             
             allClean();
             SuccessModalOpen();

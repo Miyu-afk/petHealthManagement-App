@@ -132,6 +132,8 @@ function HealthGraph({
 
         const theDayDateItem = petDataItem.find((m) => {
           if (!m.date) return false;
+          if(m.pet_id !== targetPets.pet_id) return false;
+          
           const memoDate = new Date(m.date);
           const targetDate = new Date(formattedDate);
 
