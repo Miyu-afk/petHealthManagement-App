@@ -129,7 +129,7 @@ export const Login = () => {
             className="input input-bordered w-64"
           />
           <input
-            type="text"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="パスワード"
@@ -170,7 +170,7 @@ export const Login = () => {
             className="input input-bordered w-64"
           />
           <input
-            type="text"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="パスワード"
