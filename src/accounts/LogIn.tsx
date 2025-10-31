@@ -61,6 +61,12 @@ export const Login = () => {
     setHideButton(true);
   };
 
+  const handleShowLoginForm = () => {
+    setShowLoginForm(true);
+    setShowCreateForm(false);
+    setHideButton(false);
+  };
+
   const handleNewCreateUser = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
@@ -81,7 +87,12 @@ export const Login = () => {
       const { data, error } = await supabase
         .from("users")
         .insert([
-          { pass: password, name: userName, auth_user_id: authData.user?.id, user_email: userEmail },
+          {
+            pass: password,
+            name: userName,
+            auth_user_id: authData.user?.id,
+            user_email: userEmail,
+          },
         ])
         .select()
         .single();
@@ -95,7 +106,7 @@ export const Login = () => {
       localStorage.setItem("userId", data.id);
       localStorage.setItem("userName", userName);
       localStorage.setItem("userEmail", email);
-      localStorage.setItem("authUid", authData.user?.id)
+      localStorage.setItem("authUid", authData.user?.id);
       navigate("/main");
     } catch (err) {
       console.error(err);
@@ -143,7 +154,10 @@ export const Login = () => {
       )}
 
       {!hideButton && (
-        <button className="btn w-64 mt-5" onClick={handleNewOrLogin}>
+        <button
+          className="btn w-64 mt-5 bg-gray-200"
+          onClick={handleNewOrLogin}
+        >
           新しく作る
         </button>
       )}
@@ -180,6 +194,12 @@ export const Login = () => {
 
           <button type="submit" className="btn btn-accent w-64">
             作成してログイン
+          </button>
+          <button
+            className="btn bg-gray-200 w-64"
+            onClick={handleShowLoginForm}
+          >
+            戻る
           </button>
         </form>
       )}
