@@ -172,7 +172,7 @@ function HealthGraph({
   };
 
   const divStyle: React.CSSProperties = {
-    margin: "10px auto",
+    margin: "auto",
     width: "70%",
     height: "70%",
   };

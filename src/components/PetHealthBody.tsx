@@ -234,7 +234,7 @@ const PetHealthBody = ({
       <div className="grid grid-cols-2 mt-10">
         {healthObj.map((obj) => (
           <>
-            <div className="flex text-right mr-4 items-center justify-end">
+            <div className="flex text-right mr-8 items-center justify-end">
               <span className="text-l">{obj.name}</span>
             </div>
             <div className="flex items-center">{obj.tags()}</div>
