@@ -196,7 +196,7 @@ export const Login = () => {
             作成してログイン
           </button>
           <button
-            className="btn bg-gray-200 w-64"
+            className="btn bg-gray-200 w-64 mt-2"
             onClick={handleShowLoginForm}
           >
             戻る
