@@ -76,11 +76,40 @@ const PetImageUploader = ({
     getUser();
   }, []);
 
+  const convertToJpeg = async(file: File): Promise<File> => {
+    if(!file.type.includes("heic") && !file.type.includes("heif")){
+      return file;
+    }
+
+    const imageBitmap = await createImageBitmap(file);
+    const canvas = document.createElement("canvas");
+    canvas.width = imageBitmap.width;
+    canvas.height = imageBitmap.height;
+    const ctx = canvas.getContext("2d");
+    if(!ctx) throw new Error("Canvas context error");
+    ctx.drawImage(imageBitmap, 0, 0);
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if(!blob) throw new Error("JPEG変換失敗");
+        const jpegFile = new File([blob], file.name.replace(/\.heic$/i, ".jpg"), {
+          type: "image/jpeg",
+        });
+        resolve(jpegFile);
+      },
+    "image/jpeg",
+    0.9
+  );
+    });
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
+
+    const convertedFile = await convertToJpeg(file);
+    setSelectedFile(convertedFile);
+    setPreviewUrl(URL.createObjectURL(convertedFile));
     setPreviewSet(true);
     setCurrentImgControl(true);
   };
