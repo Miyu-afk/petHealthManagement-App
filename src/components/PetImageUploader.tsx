@@ -118,12 +118,16 @@ const PetImageUploader = ({
     if (!userId || !selectedFile)
       return alert("ファイルかログインがありません。");
 
-    const filePath = `user_${userId}/pet_${petId}_${selectedFile.name}`;
+    const safeName = selectedFile.name.replace(/[^\w.-]/g, "_");
+    const filePath = `user_${userId}/pet_${petId}_${safeName}`;
     if (!selectedFile) return;
 
     const { error } = await supabase.storage
       .from("pet-images")
-      .upload(filePath, selectedFile, { upsert: true });
+      .upload(filePath, selectedFile, {
+         upsert: true,
+        contentType: selectedFile.type || "image/jpeg",
+       });
 
     if (error) {
       console.error("Upload Error:", error.message);
