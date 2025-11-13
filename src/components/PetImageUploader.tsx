@@ -118,6 +118,13 @@ const PetImageUploader = ({
     if (!userId || !selectedFile)
       return alert("ファイルかログインがありません。");
 
+    let uploadFile = selectedFile;
+    if(!uploadFile.type || uploadFile.type === "application/octet-stream"){
+      uploadFile = new File([uploadFile], uploadFile.name, {
+        type: "image/jpeg",
+      });
+    }
+    
     const safeName = selectedFile.name.replace(/[^\w.-]/g, "_");
     const filePath = `user_${userId}/pet_${petId}_${safeName}`;
     if (!selectedFile) return;
